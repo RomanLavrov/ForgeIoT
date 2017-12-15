@@ -10,7 +10,7 @@
     <title>Forge Viewer</title>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js"></script>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js"></script>
-    
+
     <script src="/Scripts/ForgeViewer.js"></script>
     <script src="/Scripts/ForgeApplication.js"></script>
     <script src="/Scripts/SmokeDetectorsExtension.js"></script>
@@ -27,14 +27,14 @@
             background-color: #F0F8FF;
         }
 
-         .adsk-viewing-viewer notouch{
-             height:80%;
-             width:60%;
-         }
+        .adsk-viewing-viewer notouch {
+            height: 80%;
+            width: 60%;
+        }
     </style>
 
 
-    
+
 
     <%--Bootstrap--%>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -53,20 +53,20 @@
                 </div>
 
                 <div style="display: table-cell; vertical-align: middle;">
-                    <asp:FileUpload ID="FileUpload1" runat="server" Style="margin-left: 40px; float: left;" />
+                    <asp:FileUpload ID="FileUpload" runat="server" Style="margin-left: 40px; float: left;" />
                 </div>
                 <div style="display: table-cell; vertical-align: middle;">
-                    <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Upload and translate" Style="margin-left: 40px; color: black;" />
+                    <asp:Button ID="Upload" runat="server" OnClick="Upload_Click" Text="Upload and translate" Style="margin-left: 40px; color: black;" />
                 </div>
             </div>
         </div>
     </form>
 
-     <button id="MyLockButton" style="z-index:10">Lock it!</button>
-    <button id="MyUnlockButton" style="z-index:10">Unlock it!</button>
+    
     <div id="MyViewerDiv"></div>
-   
 
+    <button id="MyLockButton" style="z-index: 10">Lock it!</button>
+    <button id="MyUnlockButton" style="z-index: 10">Unlock it!</button>
     <%-- <div id="forgeViewer" />--%>
 </body>
 </html>

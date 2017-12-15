@@ -1,14 +1,14 @@
-﻿Autodesk.Viewing.theExtensionManager.registerExtension('SmokeDetectorsExtension', MyAwesomeExtension);
+﻿Autodesk.Viewing.theExtensionManager.registerExtension('SmokeDetectorsExtension', SmokeDetectorsExtension);
 var detectors = [];
 
-function MyAwesomeExtension(viewer, options) {
+function SmokeDetectorsExtension(viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
 }
 
-MyAwesomeExtension.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
-MyAwesomeExtension.prototype.constructor = MyAwesomeExtension;
+SmokeDetectorsExtension.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
+SmokeDetectorsExtension.prototype.constructor = SmokeDetectorsExtension;
 
-MyAwesomeExtension.prototype.load = function () {
+SmokeDetectorsExtension.prototype.load = function () {
     console.log('IoT extension is loaded')
     var viewer = this.viewer;
 
@@ -22,18 +22,14 @@ MyAwesomeExtension.prototype.load = function () {
         viewer.setNavigationLock(false);
     });
 
-    //var content = document.createElement('div');
-    //var mypanel = new SimplePanel(viewer.container, 'iotpanel', 'IoT Detectors List', content, 20, 20);
-    //mypanel.setVisible(true);
-
     //Get elements from the view
     var tree;
 
-    viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {        
+    viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
         console.log('Model loaded');
     });
 
-    viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, function () {        
+    viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, function () {
         console.log('Tree loaded');
         tree = viewer.model.getData().instanceTree;
 
@@ -42,25 +38,28 @@ MyAwesomeExtension.prototype.load = function () {
         var rootName = tree.getNodeName(rootId);
         var childCount = 0;
         var list;
-        
+
         tree.enumNodeChildren(rootId, function (childId) {
             var childName = tree.getNodeName(childId);
             detectors.push(childName);
-            list +=  String(childName) + '\n';
+            list += String(childName) + '\n';
         });
-        alert(list + 'Length ' + detectors.length);
+        //console.log('Root Elements' + list + 'Length ' + detectors.length);
 
-        getAlldbIds(rootId, tree)
+        detectors = getAlldbIds(rootId, tree);
+        for (var i = 0; i < length; i++) {
+
+        }
 
         var content = document.createElement('div');
         var mypanel = new SimplePanel(viewer.container, 'iotpanel', 'IoT Detectors List', content, 20, 20);
         mypanel.setVisible(true);
-    });   
+    });
 
     return true;
 };
 
-MyAwesomeExtension.prototype.unload = function () {
+SmokeDetectorsExtension.prototype.unload = function () {
     alert('IoT is now unloaded!');
     return true;
 };
@@ -76,7 +75,7 @@ SimplePanel = function (parentContainer, id, title, content, x, y) {
     this.container.style.width = "450px";
     this.container.style.resize = 'both';
     this.container.style.left = x + "px";
-    this.container.style.top = y + "px";    
+    this.container.style.top = y + "px";
 };
 
 SimplePanel.prototype = Object.create(Autodesk.Viewing.UI.DockingPanel.prototype);
@@ -118,13 +117,14 @@ SimplePanel.prototype.initialize = function () {
 
     this.initializeMoveHandlers(this.title);
     this.initializeCloseHandler(this.closer);
-    
 };
 
 //Selecting elements from viewer
 
-function getAlldbIds(rootId, tree) {
+function getAlldbIds (rootId, tree) {
     var allDBId = [];
+    var elementsNames = [];
+
     if (!rootId) {
         return allDBId;
     }
@@ -142,9 +142,15 @@ function getAlldbIds(rootId, tree) {
     var list;
 
     for (var i = 0; i < allDBId.length; i++) {
+        if (tree.getNodeName(allDBId[i]).includes('RAUCH')) {
+            //alert(tree.getNodeName(allDBId[i]));
+            elementsNames.push(tree.getNodeName(allDBId[i]));
+        }
+        //elementsNames.push(tree.getNodeName(allDBId[i]));
         list += tree.getNodeName(allDBId[i]) + '\n';
     }
-    alert(list);
-    return allDBId;
+    
+    console.log(list);
+    return elementsNames;
 };
 
