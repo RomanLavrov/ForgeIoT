@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
@@ -16,8 +17,8 @@ namespace forgeViewerTest
     public partial class _default : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
-        {
-
+        {           
+            Upload_Click(Upload, null);
         }
 
         protected async void Upload_Click(object sender, EventArgs e)
@@ -25,12 +26,31 @@ namespace forgeViewerTest
             // create a randomg bucket name (fixed prefix + randomg guid)
             string bucketKey = "forgeapp" + Guid.NewGuid().ToString("N").ToLower();
 
+            string fileSavePath = String.Empty;
             // upload the file (to your server)
-            string fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/App_Data"), bucketKey, FileUpload.FileName);
-           // LargeFileUpload(FileUpload, Page, fileSavePath);
-            Directory.CreateDirectory(Path.GetDirectoryName(fileSavePath));
-            FileUpload.SaveAs(fileSavePath);
+            if (FileUpload.FileName == string.Empty)
+            {
+                //string preloadURL = "https://forgefiles.blob.core.windows.net/forgefiles/BIM%203050840.rvt"; //First version
+                string preloadURL = "https://forgefiles.blob.core.windows.net/forgefiles/A_Innovationspark.rvt";
 
+                byte[] data;
+                using (WebClient client = new WebClient())
+                {
+                    data = client.DownloadData(preloadURL);
+                    fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/App_Data"), bucketKey, "default.rvt");
+                    Directory.CreateDirectory(Path.GetDirectoryName(fileSavePath));
+                    client.UploadData(fileSavePath, data);                   
+                }                  
+               
+                System.Threading.Thread.Sleep(1000);
+            }
+            else
+            {
+                fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/App_Data"), bucketKey, FileUpload.FileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(fileSavePath));
+                FileUpload.SaveAs(fileSavePath);
+            }
+           
             // get a write enabled token
             TwoLeggedApi oauthApi = new TwoLeggedApi();
             dynamic bearer = await oauthApi.AuthenticateAsync(
@@ -49,47 +69,49 @@ namespace forgeViewerTest
             ObjectsApi objectsApi = new ObjectsApi();
             oauthApi.Configuration.AccessToken = bearer.access_token;
             dynamic newObject;
-            //using (StreamReader fileStream = new StreamReader(fileSavePath))
-            //{
-            //    newObject = await objectsApi.UploadObjectAsync(bucketKey, FileUpload.FileName, (int)fileStream.BaseStream.Length, fileStream.BaseStream,
-            //        "application/octet-stream");               
-            //}
+            using (StreamReader fileStream = new StreamReader(fileSavePath))
+            {
+                string fileName = FileUpload.FileName;
+                if (FileUpload.FileName == string.Empty)
+                    fileName = "default.rvt";
+                newObject = await objectsApi.UploadObjectAsync(bucketKey, fileName, (int)fileStream.BaseStream.Length, fileStream.BaseStream,
+                    "application/octet-stream");
+            }
 
             //--------------------------------------------------------------------------------------
-            long fileSize = FileUpload.PostedFile.ContentLength;
-            long chunkSize = 2 * 1024 * 1024;
-            string sessionId = RandomString(12);
-            long chunkQuantity = (long)Math.Round(0.5 + (double)fileSize / (double)chunkSize);
-           
+            //long fileSize = FileUpload.PostedFile.ContentLength;
+            //long chunkSize = 2 * 1024 * 1024;
+            //string sessionId = RandomString(12);
+            //long chunkQuantity = (long)Math.Round(0.5 + (double)fileSize / (double)chunkSize);
 
-            ApiResponse<dynamic> response = null;
+            //ApiResponse<dynamic> response = null;
 
-            using (FileStream streamReader = new FileStream(fileSavePath, FileMode.Open))
-            {               
-                for (int i = 0; i < chunkQuantity; i++)
-                {                    
-                    long start = i * chunkSize;
-                    long end = Math.Min(fileSize, (i + 1) * chunkSize) - 1;
+            //using (FileStream streamReader = new FileStream(fileSavePath, FileMode.Open))
+            //{
+            //    for (int i = 0; i < chunkQuantity; i++)
+            //    {
+            //        long start = i * chunkSize;
+            //        long end = Math.Min(fileSize, (i + 1) * chunkSize) - 1;
 
-                    string range = "bytes " + start + "-" + end + "/" + fileSize;
-                    long length = end - start + 1;
+            //        string range = "bytes " + start + "-" + end + "/" + fileSize;
+            //        long length = end - start + 1;
 
-                    byte[] buffer = new byte[length];
-                    MemoryStream memoryStream = new MemoryStream(buffer);
+            //        byte[] buffer = new byte[length];
+            //        MemoryStream memoryStream = new MemoryStream(buffer);
 
-                    int parts = streamReader.Read(buffer, 0, (int)length);
-                    memoryStream.Write(buffer, 0, parts);
-                    memoryStream.Position = 0;
-                    
-                    
-                    response = await objectsApi.UploadChunkAsyncWithHttpInfo(bucketKey, FileUpload.FileName, (int)length, range, sessionId, memoryStream, "application/octet-stream");
-                    //System.IO.File.WriteAllText("data/" + bucketKey + "." + FileUpload.FileName + ".json", response.Data.ToString() as string);
-                    MessageBox.Show(Page, response.StatusCode.ToString());                    
-                }
+            //        int parts = streamReader.Read(buffer, 0, (int)length);
+            //        memoryStream.Write(buffer, 0, parts);
+            //        memoryStream.Position = 0;
 
-                //MessageBox.Show(Page, "BusketKey=" + bucketKey + "; FileSize=" + fileSize + "; ChunkQuantity=" + chunkQuantity + "; SessionId=" + sessionId + "; StreamReaderLength=" + streamReader.Length);
-            }
-            newObject = response.Data;
+
+            //        response = await objectsApi.UploadChunkAsyncWithHttpInfo(bucketKey, FileUpload.FileName, (int)length, range, sessionId, memoryStream, "application/octet-stream");
+            //        //System.IO.File.WriteAllText("data/" + bucketKey + "." + FileUpload.FileName + ".json", response.Data.ToString() as string);
+            //        //MessageBox.Show(Page, response.StatusCode.ToString());
+            //    }
+
+            //    //MessageBox.Show(Page, "BusketKey=" + bucketKey + "; FileSize=" + fileSize + "; ChunkQuantity=" + chunkQuantity + "; SessionId=" + sessionId + "; StreamReaderLength=" + streamReader.Length);
+            //}
+            //newObject = response.Data;
             //---------------------------------------------------------------------------------------
 
             // translate file
@@ -157,7 +179,7 @@ namespace forgeViewerTest
                 generated += array[pos];
             }
             return generated;
-        }        
+        }
     }
 
     public static class MessageBox
