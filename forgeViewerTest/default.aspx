@@ -12,29 +12,9 @@
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js"></script>
 
     <script src="/Scripts/ForgeViewer.js"></script>
+    <script src="/Scripts/Server.js"></script>
     <script src="/Scripts/ForgeApplication.js"></script>
     <script src="/Scripts/SmokeDetectorsExtension.js"></script>
-
-    <style>
-        body {
-            margin: 0;
-        }
-
-        #MyViewerDiv {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            background-color: #F0F8FF;
-        }
-
-        .adsk-viewing-viewer notouch {
-            height: 80%;
-            width: 60%;
-        }
-    </style>
-
-
-
 
     <%--Bootstrap--%>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -43,8 +23,6 @@
 
 </head>
 <body>
-
-
     <form id="form1" runat="server">
         <div>
             <div id="Header" style="height: 70px; background-color: dimgray; color: white;">
@@ -62,11 +40,12 @@
         </div>
     </form>
 
-    
-    <div id="MyViewerDiv"></div>
 
-    <button id="MyLockButton" style="z-index: 10">Lock it!</button>
-    <button id="MyUnlockButton" style="z-index: 10">Unlock it!</button>
-    <%-- <div id="forgeViewer" />--%>
+    <div id="MyViewerDiv" class="viewer" style="width: auto; height: 800px; background-color: red; position: relative; margin: 0 auto"></div>
+
+    <%--<button id="MyLockButton" style="z-index: 10">Lock it!</button>
+    <button id="MyUnlockButton" style="z-index: 10">Unlock it!</button>--%>
+
+
 </body>
 </html>

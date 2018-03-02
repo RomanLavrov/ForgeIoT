@@ -12,15 +12,15 @@ SmokeDetectorsExtension.prototype.load = function () {
     console.log('IoT extension is loaded')
     var viewer = this.viewer;
 
-    var lockBtn = document.getElementById('MyLockButton');
-    lockBtn.addEventListener('click', function () {
-        viewer.setNavigationLock(true);
-    });
+    //var lockBtn = document.getElementById('MyLockButton');
+    //lockBtn.addEventListener('click', function () {
+    //    viewer.setNavigationLock(true);
+    //});
 
-    var unlockBtn = document.getElementById('MyUnlockButton');
-    unlockBtn.addEventListener('click', function () {
-        viewer.setNavigationLock(false);
-    });
+    //var unlockBtn = document.getElementById('MyUnlockButton');
+    //unlockBtn.addEventListener('click', function () {
+    //    viewer.setNavigationLock(false);
+    //});
 
     //Get elements from the view
     var tree;
@@ -47,9 +47,14 @@ SmokeDetectorsExtension.prototype.load = function () {
         //console.log('Root Elements' + list + 'Length ' + detectors.length);
 
         detectors = getAlldbIds(rootId, tree);
-        for (var i = 0; i < length; i++) {
 
-        }
+        //---------------------------Check detectors list--------------------------
+        //var showDetectors;
+        //for (var i = 0; i < detectors.length; i++) {
+        //    showDetectors += detectors[i]. + "\n";
+        //}
+        //alert(showDetectors);
+        //--------------------------------
 
         var content = document.createElement('div');
         var mypanel = new SimplePanel(viewer.container, 'iotpanel', 'IoT Detectors List', content, 20, 20);
@@ -71,11 +76,12 @@ SimplePanel = function (parentContainer, id, title, content, x, y) {
 
     // Auto-fit to the content and don't allow resize.  Position at the coordinates given.
     //
-    this.container.style.height = "300px";
-    this.container.style.width = "450px";
+    this.container.style.height = '600px';
+    this.container.style.width = 'auto';
     this.container.style.resize = 'both';
-    this.container.style.left = x + "px";
-    this.container.style.top = y + "px";
+    this.container.style.left = x + 'px';
+    this.container.style.top = y + 'px';
+
 };
 
 SimplePanel.prototype = Object.create(Autodesk.Viewing.UI.DockingPanel.prototype);
@@ -97,14 +103,14 @@ SimplePanel.prototype.initialize = function () {
     var html = [
         '<div class="uicomponent-panel-controls-container">',
         '<div class="panel panel-default">',
-        '<table class="table table-bordered table-inverse" id = "clashresultstable">',
-        '<thead>',
-        '<th>ID</th><th>Status</th><th>Room name</th><th>Sensor position</th>',
+        '<table bgcolor="#00FF00" class="table table-bordered table-inverse" id = "clashresultstable">',
+        '<thead bgcolor="#323232">',
+        '<th>Detector name</th><th>CO level</th><th>Smoke Level</th><th>Sensor position</th>',
         '</thead>',
-        '<tbody>'].join('\n');
+        '<tbody bgcolor="#323232">'].join('\n');
 
     for (var i = 0; i < detectors.length; i++) {
-        html += ['<tr><td>' + detectors[i] + '</td><td>test</td><td>test</td><td><button>Show</button></td></tr>'].join('\n');
+        html += ['<tr><td>' + detectors[i] + '</td><td>Ok</td><td>Warning</td><td><button style="color: black">Show</button></td></tr>'].join('\n');
     }
 
     html += ['</tbody>',
@@ -113,15 +119,16 @@ SimplePanel.prototype.initialize = function () {
         '</div>'
     ].join('\n');
 
-    $(this.scrollContainer).append(html);
+    //$(this.scrollContainer).append(html);
 
+    $(this.scrollcontainer).append(html);
     this.initializeMoveHandlers(this.title);
     this.initializeCloseHandler(this.closer);
 };
 
 //Selecting elements from viewer
 
-function getAlldbIds (rootId, tree) {
+function getAlldbIds(rootId, tree) {
     var allDBId = [];
     var elementsNames = [];
 
@@ -139,18 +146,33 @@ function getAlldbIds (rootId, tree) {
         });
     };
 
-    var list;
-
     for (var i = 0; i < allDBId.length; i++) {
-        if (tree.getNodeName(allDBId[i]).includes('RAUCH')) {
-            //alert(tree.getNodeName(allDBId[i]));
+        if (tree.getNodeName(allDBId[i]).includes('RAUCH') && tree.getNodeName(allDBId[i]).includes('[')) {
             elementsNames.push(tree.getNodeName(allDBId[i]));
         }
-        //elementsNames.push(tree.getNodeName(allDBId[i]));
-        list += tree.getNodeName(allDBId[i]) + '\n';
     }
-    
-    console.log(list);
     return elementsNames;
 };
+
+
+//----------IoT messages from websocket---------
+var ws = new WebSocket('wss://' + location.host);
+console.log('Websocket URL: ' + ws.url);
+
+
+ws.onopen = function () {
+    console.log('Connected to WebSocket');
+    ws.send("Hello from forge");
+
+}
+
+ws.onmessage = function (message) {
+    console.log('receive message' + message.data);
+}
+
+ws.onerror = function (error) {
+    console.log("WebSocket error: " + error.message);
+}
+
+
 

@@ -30,8 +30,11 @@ namespace forgeViewerTest
             // upload the file (to your server)
             if (FileUpload.FileName == string.Empty)
             {
+                //-----Select stertup project ort start empty-----
+
                 //string preloadURL = "https://forgefiles.blob.core.windows.net/forgefiles/BIM%203050840.rvt"; //First version
-                string preloadURL = "https://forgefiles.blob.core.windows.net/forgefiles/A_Innovationspark.rvt";
+                string preloadURL = "https://forgefiles.blob.core.windows.net/forgefiles/FireDetectorsForge.rvt";
+                //string preloadURL = "https://forgefiles.blob.core.windows.net/forgefiles/A_Innovationspark.rvt";
 
                 byte[] data;
                 using (WebClient client = new WebClient())
@@ -156,7 +159,6 @@ namespace forgeViewerTest
             //Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowModel", string.Format("<script>showModel('{0}');</script>", objectIdBase64));
             Page.ClientScript.RegisterStartupScript(this.GetType(), "InitApplication", string.Format("<script>initApplication('{0}');</script>", objectIdBase64));
 
-
             // clean up
             Directory.Delete(Path.GetDirectoryName(fileSavePath), true);
         }
@@ -174,7 +176,6 @@ namespace forgeViewerTest
             Random random = new Random();
             for (int i = 0; i < size; i++)
             {
-
                 var pos = random.Next(0, array.Length);
                 generated += array[pos];
             }
@@ -193,4 +194,5 @@ namespace forgeViewerTest
             );
         }
     }
+
 }
