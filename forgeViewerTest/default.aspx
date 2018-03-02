@@ -11,8 +11,7 @@
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js"></script>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js"></script>
 
-    <script src="/Scripts/ForgeViewer.js"></script>
-    <script src="/Scripts/Server.js"></script>
+    <script src="/Scripts/ForgeViewer.js"></script>   
     <script src="/Scripts/ForgeApplication.js"></script>
     <script src="/Scripts/SmokeDetectorsExtension.js"></script>
 

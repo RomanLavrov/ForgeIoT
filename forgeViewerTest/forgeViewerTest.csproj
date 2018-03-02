@@ -218,7 +218,6 @@
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\ForgeViewer.js" />
-    <Content Include="Scripts\Server.js" />
     <Content Include="Scripts\SmokeDetectorsExtension.js" />
     <Content Include="Styles\ForgeViewer.css" />
     <Content Include="Web.config" />
