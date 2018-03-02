@@ -154,16 +154,13 @@ function getAlldbIds(rootId, tree) {
     return elementsNames;
 };
 
-
 //----------IoT messages from websocket---------
 var ws = new WebSocket('wss://' + location.host);
 console.log('Websocket URL: ' + ws.url);
 
-
 ws.onopen = function () {
     console.log('Connected to WebSocket');
     ws.send("Hello from forge");
-
 }
 
 ws.onmessage = function (message) {
