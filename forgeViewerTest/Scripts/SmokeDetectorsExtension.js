@@ -9,7 +9,7 @@ SmokeDetectorsExtension.prototype = Object.create(Autodesk.Viewing.Extension.pro
 SmokeDetectorsExtension.prototype.constructor = SmokeDetectorsExtension;
 
 SmokeDetectorsExtension.prototype.load = function () {
-    console.log('IoT extension is loaded')
+    console.log('IoT extension is loaded');
     var viewer = this.viewer;
 
     //var lockBtn = document.getElementById('MyLockButton');
@@ -144,7 +144,7 @@ function getAlldbIds(rootId, tree) {
         tree.enumNodeChildren(node, function (childrenIds) {
             queue.push(childrenIds);
         });
-    };
+    }
 
     for (var i = 0; i < allDBId.length; i++) {
         if (tree.getNodeName(allDBId[i]).includes('RAUCH') && tree.getNodeName(allDBId[i]).includes('[')) {
@@ -152,7 +152,7 @@ function getAlldbIds(rootId, tree) {
         }
     }
     return elementsNames;
-};
+}
 
 //----------IoT messages from websocket---------
 var ws = new WebSocket('wss://' + location.host);
@@ -161,15 +161,15 @@ var ws = new WebSocket('wss://' + location.host);
 ws.onopen = function () {
     console.log('Connected to WebSocket');
     ws.send("Hello from forge");
-}
+};
 
 ws.onmessage = function (message) {
     console.log('receive message' + message.data);
-}
+};
 
 ws.onerror = function (error) {
     console.log("WebSocket error: " + error.message);
-}
+};
 
 
 
