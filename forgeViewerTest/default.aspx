@@ -13,6 +13,7 @@
 
     <script src="/Scripts/ForgeViewer.js"></script>   
     <script src="/Scripts/ForgeApplication.js"></script>
+    <script src="/Scripts/Server.js"></script>
     <script src="/Scripts/SmokeDetectorsExtension.js"></script>
 
     <%--Bootstrap--%>
