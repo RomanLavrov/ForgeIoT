@@ -156,8 +156,8 @@ function getAlldbIds(rootId, tree) {
 
 //----------IoT messages from websocket---------
 var ws = new WebSocket('wss://' + location.host);
-ws.protocol = 
-//console.log('Websocket URL: ' + ws.url);
+
+console.log('Websocket URL: ' + ws.url);
 
 ws.onopen = function () {
     console.log('Connected to WebSocket');
