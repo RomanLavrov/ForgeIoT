@@ -1,12 +1,16 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
+using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.UI;
@@ -16,9 +20,34 @@ namespace forgeViewerTest
 {
     public partial class _default : System.Web.UI.Page
     {
+        static string connectionString = "HostName=ForgeIOT.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=UsAFtVghhokUJyQc3ouihFUaJcMIp5Xq6ihzcEFtdPk=";
+        static string iotEndpoint = "messages/events";
+        static EventHubClient eventHubClient;
+        
         protected void Page_Load(object sender, EventArgs e)
         {           
-            Upload_Click(Upload, null);
+            Upload_Click(Upload, null);           
+
+            //RegisterAsyncTask(new PageAsyncTask(GetMessageAsync));
+            
+        }
+
+        private async Task GetMessageAsync()
+        {
+            MessageBox.Show(this.Page, "Page Loaded");
+            eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, iotEndpoint);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            var cloudPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
+            var tasks = new List<Task>();
+            foreach (string partition in cloudPartitions)
+            {
+                tasks.Add(ReceiveMessagesAsync(partition, cts.Token));
+
+            }
+            //Task.WaitAll(tasks.ToArray());
+            
+            //await tasks[0];
+            //await tasks[1];
         }
 
         protected async void Upload_Click(object sender, EventArgs e)
@@ -79,43 +108,7 @@ namespace forgeViewerTest
                     fileName = "default.rvt";
                 newObject = await objectsApi.UploadObjectAsync(bucketKey, fileName, (int)fileStream.BaseStream.Length, fileStream.BaseStream,
                     "application/octet-stream");
-            }
-
-            //--------------------------------------------------------------------------------------
-            //long fileSize = FileUpload.PostedFile.ContentLength;
-            //long chunkSize = 2 * 1024 * 1024;
-            //string sessionId = RandomString(12);
-            //long chunkQuantity = (long)Math.Round(0.5 + (double)fileSize / (double)chunkSize);
-
-            //ApiResponse<dynamic> response = null;
-
-            //using (FileStream streamReader = new FileStream(fileSavePath, FileMode.Open))
-            //{
-            //    for (int i = 0; i < chunkQuantity; i++)
-            //    {
-            //        long start = i * chunkSize;
-            //        long end = Math.Min(fileSize, (i + 1) * chunkSize) - 1;
-
-            //        string range = "bytes " + start + "-" + end + "/" + fileSize;
-            //        long length = end - start + 1;
-
-            //        byte[] buffer = new byte[length];
-            //        MemoryStream memoryStream = new MemoryStream(buffer);
-
-            //        int parts = streamReader.Read(buffer, 0, (int)length);
-            //        memoryStream.Write(buffer, 0, parts);
-            //        memoryStream.Position = 0;
-
-
-            //        response = await objectsApi.UploadChunkAsyncWithHttpInfo(bucketKey, FileUpload.FileName, (int)length, range, sessionId, memoryStream, "application/octet-stream");
-            //        //System.IO.File.WriteAllText("data/" + bucketKey + "." + FileUpload.FileName + ".json", response.Data.ToString() as string);
-            //        //MessageBox.Show(Page, response.StatusCode.ToString());
-            //    }
-
-            //    //MessageBox.Show(Page, "BusketKey=" + bucketKey + "; FileSize=" + fileSize + "; ChunkQuantity=" + chunkQuantity + "; SessionId=" + sessionId + "; StreamReaderLength=" + streamReader.Length);
-            //}
-            //newObject = response.Data;
-            //---------------------------------------------------------------------------------------
+            }            
 
             // translate file
             string objectIdBase64 = ToBase64(newObject.objectId);
@@ -181,6 +174,21 @@ namespace forgeViewerTest
             }
             return generated;
         }
+
+        private async Task ReceiveMessagesAsync(string partition, CancellationToken token)
+        {
+            var eventHubReceiver = eventHubClient.GetDefaultConsumerGroup().CreateReceiver(partition, DateTime.Now);
+            while (true)
+            {
+                if (token.IsCancellationRequested) break;
+                EventData eventData = await eventHubReceiver.ReceiveAsync();
+                if (eventData == null) continue;
+
+                string data = Encoding.UTF8.GetString(eventData.GetBytes());
+                MessageBox.Show(this.Page, data);
+                //Console.WriteLine("Message Received. Partition: {0} Data: {1}", partition, data);
+            }
+        }
     }
 
     public static class MessageBox
@@ -194,5 +202,4 @@ namespace forgeViewerTest
             );
         }
     }
-
 }
