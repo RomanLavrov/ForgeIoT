@@ -8,14 +8,14 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css" type="text/css" />
     <title>Forge Viewer</title>
-    <script src="azure-storage.common.js"></script>
-    <script src="azure-storage.blob.js"></script>
+    
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js"></script>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js"></script>
 
     <script src="/Scripts/ForgeViewer.js"></script>
     <script src="/Scripts/ForgeApplication.js"></script>
-    <
+    <script src="/Scripts/WebSocketReader.js"></script>
+    
     <script src="/Scripts/SmokeDetectorsExtension.js"></script>
 
     <%--Bootstrap--%>

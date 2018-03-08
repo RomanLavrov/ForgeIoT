@@ -19,36 +19,11 @@ using System.Web.UI.WebControls;
 namespace forgeViewerTest
 {
     public partial class _default : System.Web.UI.Page
-    {
-        static string connectionString = "HostName=ForgeIOT.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=UsAFtVghhokUJyQc3ouihFUaJcMIp5Xq6ihzcEFtdPk=";
-        static string iotEndpoint = "messages/events";
-        static EventHubClient eventHubClient;
-        
+    {        
         protected void Page_Load(object sender, EventArgs e)
         {           
-            Upload_Click(Upload, null);           
-
-            //RegisterAsyncTask(new PageAsyncTask(GetMessageAsync));
-            
-        }
-
-        private async Task GetMessageAsync()
-        {
-            MessageBox.Show(this.Page, "Page Loaded");
-            eventHubClient = EventHubClient.CreateFromConnectionString(connectionString, iotEndpoint);
-            CancellationTokenSource cts = new CancellationTokenSource();
-            var cloudPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
-            var tasks = new List<Task>();
-            foreach (string partition in cloudPartitions)
-            {
-                tasks.Add(ReceiveMessagesAsync(partition, cts.Token));
-
-            }
-            //Task.WaitAll(tasks.ToArray());
-            
-            //await tasks[0];
-            //await tasks[1];
-        }
+            Upload_Click(Upload, null);
+        }       
 
         protected async void Upload_Click(object sender, EventArgs e)
         {
@@ -149,7 +124,6 @@ namespace forgeViewerTest
             // ready!!!!
 
             // register a client-side script to show this model
-            //Page.ClientScript.RegisterStartupScript(this.GetType(), "ShowModel", string.Format("<script>showModel('{0}');</script>", objectIdBase64));
             Page.ClientScript.RegisterStartupScript(this.GetType(), "InitApplication", string.Format("<script>initApplication('{0}');</script>", objectIdBase64));
 
             // clean up
@@ -173,22 +147,7 @@ namespace forgeViewerTest
                 generated += array[pos];
             }
             return generated;
-        }
-
-        private async Task ReceiveMessagesAsync(string partition, CancellationToken token)
-        {
-            var eventHubReceiver = eventHubClient.GetDefaultConsumerGroup().CreateReceiver(partition, DateTime.Now);
-            while (true)
-            {
-                if (token.IsCancellationRequested) break;
-                EventData eventData = await eventHubReceiver.ReceiveAsync();
-                if (eventData == null) continue;
-
-                string data = Encoding.UTF8.GetString(eventData.GetBytes());
-                MessageBox.Show(this.Page, data);
-                //Console.WriteLine("Message Received. Partition: {0} Data: {1}", partition, data);
-            }
-        }
+        }        
     }
 
     public static class MessageBox

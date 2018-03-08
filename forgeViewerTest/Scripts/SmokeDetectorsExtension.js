@@ -155,7 +155,9 @@ function getAlldbIds(rootId, tree) {
 }
 
 //----------IoT messages from websocket---------
-//var ws = new WebSocket('wss://' + location.host);
+//var ws = new WebSocket('wss://' + location.host + '/WebSocketServer.ashx');
+////var ws = new WebSocket('wss://' + location.host);
+
 
 //console.log('Websocket URL: ' + ws.url);
 
@@ -165,12 +167,17 @@ function getAlldbIds(rootId, tree) {
 //};
 
 //ws.onmessage = function (message) {
+//    alert(message.data);
 //    console.log('receive message' + message.data);
 //};
 
 //ws.onerror = function (error) {
 //    console.log("WebSocket error: " + error.message);
 //};
+
+//ws.onclose = function () {
+//    console.log('connection closed')
+//}
 
 
 
