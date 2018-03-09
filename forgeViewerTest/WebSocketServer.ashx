@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" CodeBehind="WebSocketServer.ashx.cs" Class="forgeViewerTest.WebSocketHandler" %>
+﻿<%@ WebHandler Language="C#" CodeBehind="WebSocketServer.ashx.cs" Class="forgeViewerTest.WebSocketServer" %>
